@@ -132,7 +132,9 @@ CREATE TABLE `products` (
   `product_price` double NOT NULL,
   `product_desc` varchar(500) DEFAULT NULL,
   `product_image` varchar(100) DEFAULT NULL,
-  `product_keywords` varchar(100) DEFAULT NULL
+  `product_keywords` varchar(100) DEFAULT NULL,
+  `user_id` int(11) NOT NULL,
+  `date_created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
@@ -196,7 +198,9 @@ ALTER TABLE `payment`
 ALTER TABLE `products`
   ADD PRIMARY KEY (`product_id`),
   ADD KEY `product_cat` (`product_cat`),
-  ADD KEY `product_brand` (`product_brand`);
+  ADD KEY `product_brand` (`product_brand`),
+  ADD KEY `user_id` (`user_id`),
+  ADD UNIQUE KEY `unique_product_per_user` (`product_title`, `product_brand`, `user_id`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -286,8 +290,9 @@ ALTER TABLE `categories`
 -- Constraints for table `products`
 --
 ALTER TABLE `products`
-  ADD CONSTRAINT `products_ibfk_1` FOREIGN KEY (`product_cat`) REFERENCES `categories` (`cat_id`),
-  ADD CONSTRAINT `products_ibfk_2` FOREIGN KEY (`product_brand`) REFERENCES `brands` (`brand_id`);
+  ADD CONSTRAINT `products_ibfk_1` FOREIGN KEY (`product_cat`) REFERENCES `categories` (`cat_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `products_ibfk_2` FOREIGN KEY (`product_brand`) REFERENCES `brands` (`brand_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `products_ibfk_3` FOREIGN KEY (`user_id`) REFERENCES `customer` (`customer_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
