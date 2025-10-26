@@ -60,15 +60,29 @@ class Product extends db_connection {
     public function addProduct() {
         $sql = "INSERT INTO products (product_cat, product_brand, product_title, product_price, product_desc, product_image, product_keywords, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         $stmt = $this->db_conn()->prepare($sql);
-        $stmt->bind_param("iisdssi", $this->product_cat, $this->product_brand, $this->product_title, $this->product_price, $this->product_desc, $this->product_image, $this->product_keywords, $this->user_id);
-        return $stmt->execute();
+        if (!$stmt) {
+            throw new Exception("Prepare failed: " . $this->db_conn()->error);
+        }
+        $stmt->bind_param("iisdsssi", $this->product_cat, $this->product_brand, $this->product_title, $this->product_price, $this->product_desc, $this->product_image, $this->product_keywords, $this->user_id);
+        $result = $stmt->execute();
+        if (!$result) {
+            throw new Exception("Execute failed: " . $stmt->error);
+        }
+        return $result;
     }
 
     public function updateProduct() {
         $sql = "UPDATE products SET product_cat = ?, product_brand = ?, product_title = ?, product_price = ?, product_desc = ?, product_image = ?, product_keywords = ? WHERE product_id = ? AND user_id = ?";
         $stmt = $this->db_conn()->prepare($sql);
+        if (!$stmt) {
+            throw new Exception("Prepare failed: " . $this->db_conn()->error);
+        }
         $stmt->bind_param("iisdssiii", $this->product_cat, $this->product_brand, $this->product_title, $this->product_price, $this->product_desc, $this->product_image, $this->product_keywords, $this->product_id, $this->user_id);
-        return $stmt->execute();
+        $result = $stmt->execute();
+        if (!$result) {
+            throw new Exception("Execute failed: " . $stmt->error);
+        }
+        return $result;
     }
 
     public function getProducts($user_id) {

@@ -296,19 +296,44 @@ $(document).ready(function() {
                         resetForm();
                     }
                 } else {
+                    console.error('Server response:', response);
+                    let errorMsg = response.message || 'Failed to save product';
+                    if (response.debug) {
+                        console.error('Debug info:', response.debug);
+                    }
+                    if (response.error) {
+                        console.error('Error details:', response.error);
+                        errorMsg += '<br><small>' + response.error + '</small>';
+                    }
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',
-                        text: response.message
+                        html: errorMsg
                     });
                 }
             },
             error: function(xhr, status, error) {
-                console.error('Save Error:', xhr.responseText);
+                console.error('AJAX Error Details:');
+                console.error('Status:', status);
+                console.error('Error:', error);
+                console.error('Response Text:', xhr.responseText);
+                console.error('Response Status:', xhr.status);
+                
+                let errorMessage = 'Failed to save product. ';
+                if (xhr.status === 500) {
+                    errorMessage += 'Server error (500). Check server logs.';
+                } else if (xhr.status === 404) {
+                    errorMessage += 'Action file not found (404).';
+                } else if (xhr.status === 0) {
+                    errorMessage += 'Network error. Check your connection.';
+                } else {
+                    errorMessage += 'Status: ' + xhr.status;
+                }
+                
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
-                    text: 'Failed to save product. Check console for details.'
+                    html: errorMessage + '<br><small>Check browser console for details.</small>'
                 });
             }
         });

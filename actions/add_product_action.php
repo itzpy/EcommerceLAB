@@ -50,15 +50,27 @@ if ($existing) {
     exit();
 }
 
-$result = add_product_ctr($product_cat, $product_brand, $product_title, $product_price, $product_desc, $product_image, $product_keywords, $user_id);
+try {
+    $result = add_product_ctr($product_cat, $product_brand, $product_title, $product_price, $product_desc, $product_image, $product_keywords, $user_id);
 
-if ($result) {
-    $response['success'] = true;
-    $response['message'] = 'Product added successfully!';
-    $response['product_id'] = $result;
-} else {
+    if ($result) {
+        $response['success'] = true;
+        $response['message'] = 'Product added successfully!';
+        $response['product_id'] = $result;
+    } else {
+        $response['success'] = false;
+        $response['message'] = 'Failed to add product. Database operation returned false.';
+        $response['debug'] = [
+            'user_id' => $user_id,
+            'product_cat' => $product_cat,
+            'product_brand' => $product_brand,
+            'product_title' => $product_title
+        ];
+    }
+} catch (Exception $e) {
     $response['success'] = false;
-    $response['message'] = 'Failed to add product.';
+    $response['message'] = 'Error adding product: ' . $e->getMessage();
+    $response['error'] = $e->getMessage();
 }
 
 echo json_encode($response);
