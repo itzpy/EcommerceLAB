@@ -29,7 +29,9 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `brands` (
   `brand_id` int(11) NOT NULL,
-  `brand_name` varchar(100) NOT NULL
+  `brand_name` varchar(100) NOT NULL,
+  `cat_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -141,7 +143,10 @@ CREATE TABLE `products` (
 -- Indexes for table `brands`
 --
 ALTER TABLE `brands`
-  ADD PRIMARY KEY (`brand_id`);
+  ADD PRIMARY KEY (`brand_id`),
+  ADD KEY `cat_id` (`cat_id`),
+  ADD KEY `user_id` (`user_id`),
+  ADD UNIQUE KEY `unique_brand_per_category_user` (`brand_name`, `cat_id`, `user_id`);
 
 --
 -- Indexes for table `cart`
@@ -263,6 +268,13 @@ ALTER TABLE `orders`
 ALTER TABLE `payment`
   ADD CONSTRAINT `payment_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customer` (`customer_id`),
   ADD CONSTRAINT `payment_ibfk_2` FOREIGN KEY (`order_id`) REFERENCES `orders` (`order_id`);
+
+--
+-- Constraints for table `brands`
+--
+ALTER TABLE `brands`
+  ADD CONSTRAINT `brands_ibfk_1` FOREIGN KEY (`cat_id`) REFERENCES `categories` (`cat_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `brands_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `customer` (`customer_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `categories`

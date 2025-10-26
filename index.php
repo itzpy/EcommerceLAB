@@ -39,6 +39,7 @@
 			<span class="text-muted me-2">Welcome, <?php echo htmlspecialchars($_SESSION['name']); ?>!</span>
 			<?php if ($_SESSION['role'] == 1): ?>
 				<a href="admin/category.php" class="btn btn-sm btn-outline-success me-2">Category</a>
+				<a href="admin/brand.php" class="btn btn-sm btn-outline-info me-2">Brand</a>
 			<?php endif; ?>
 			<a href="login/logout.php" class="btn btn-sm btn-outline-danger">Logout</a>
 		<?php else: ?>
