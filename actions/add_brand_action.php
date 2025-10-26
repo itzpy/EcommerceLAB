@@ -11,7 +11,7 @@ $response = array();
 if (isset($_POST['brand_name']) && isset($_POST['cat_id']) && isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true && $_SESSION['role'] == 1) {
     $brand_name = trim($_POST['brand_name']);
     $cat_id = (int)$_POST['cat_id'];
-    $user_id = $_SESSION['id'];
+    $user_id = $_SESSION['customer_id'];
     
     if (!empty($brand_name) && $cat_id > 0) {
         $result = add_brand_ctr($brand_name, $cat_id, $user_id);

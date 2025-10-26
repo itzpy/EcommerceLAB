@@ -10,7 +10,7 @@ $response = array();
 
 if (isset($_POST['cat_id']) && isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true && $_SESSION['role'] == 1) {
     $cat_id = (int)$_POST['cat_id'];
-    $user_id = $_SESSION['id'];
+    $user_id = $_SESSION['customer_id'];
     
     if ($cat_id > 0) {
         $result = delete_category_ctr($cat_id, $user_id);
