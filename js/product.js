@@ -60,15 +60,7 @@ $(document).ready(function() {
             return;
         }
 
-        const hasNewImage = $('#productImage')[0].files.length > 0;
-
-        if (currentProductId && !hasNewImage && !uploadedImagePath && !$('#imagePath').val()) {
-            saveProduct();
-        } else if (hasNewImage) {
-            uploadImage();
-        } else {
-            saveProduct();
-        }
+        saveProduct();
     });
 
     function loadCategories() {
@@ -256,47 +248,6 @@ $(document).ready(function() {
         });
     }
 
-    function uploadImage() {
-        const fileInput = $('#productImage')[0];
-        if (fileInput.files.length === 0) {
-            saveProduct();
-            return;
-        }
-
-        const formData = new FormData();
-        formData.append('product_image', fileInput.files[0]);
-        formData.append('product_id', currentProductId || 'temp_' + Date.now());
-
-        $.ajax({
-            url: '../actions/upload_product_image_action.php',
-            method: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            dataType: 'json',
-            success: function(response) {
-                if (response.success) {
-                    uploadedImagePath = response.image_path;
-                    $('#imagePath').val(uploadedImagePath);
-                    saveProduct();
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Upload Failed',
-                        text: response.message
-                    });
-                }
-            },
-            error: function() {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Failed to upload image'
-                });
-            }
-        });
-    }
-
     function saveProduct() {
         const formData = {
             product_id: $('#productId').val(),
@@ -306,7 +257,7 @@ $(document).ready(function() {
             product_price: $('#productPrice').val(),
             product_desc: $('#productDesc').val(),
             product_keywords: $('#productKeywords').val(),
-            product_image: uploadedImagePath || $('#imagePath').val() || ''
+            product_image: ''
         };
 
         const url = currentProductId 
@@ -320,15 +271,21 @@ $(document).ready(function() {
             dataType: 'json',
             success: function(response) {
                 if (response.success) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Success',
-                        text: response.message,
-                        timer: 2000
-                    });
-                    $('#productModal').modal('hide');
-                    loadProducts();
-                    resetForm();
+                    const productId = response.product_id || currentProductId;
+                    
+                    if ($('#productImage')[0].files.length > 0 && productId) {
+                        uploadImageForProduct(productId);
+                    } else {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: response.message,
+                            timer: 2000
+                        });
+                        $('#productModal').modal('hide');
+                        loadProducts();
+                        resetForm();
+                    }
                 } else {
                     Swal.fire({
                         icon: 'error',
@@ -337,12 +294,92 @@ $(document).ready(function() {
                     });
                 }
             },
-            error: function() {
+            error: function(xhr, status, error) {
+                console.error('Save Error:', xhr.responseText);
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
-                    text: 'Failed to save product'
+                    text: 'Failed to save product. Check console for details.'
                 });
+            }
+        });
+    }
+
+    function uploadImageForProduct(productId) {
+        const fileInput = $('#productImage')[0];
+        const formData = new FormData();
+        formData.append('product_image', fileInput.files[0]);
+        formData.append('product_id', productId);
+
+        $.ajax({
+            url: '../actions/upload_product_image_action.php',
+            method: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    updateProductImage(productId, response.image_path);
+                } else {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Product Saved',
+                        text: 'Product saved but image upload failed: ' + response.message
+                    });
+                    $('#productModal').modal('hide');
+                    loadProducts();
+                    resetForm();
+                }
+            },
+            error: function() {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Product Saved',
+                    text: 'Product saved but image upload failed'
+                });
+                $('#productModal').modal('hide');
+                loadProducts();
+                resetForm();
+            }
+        });
+    }
+
+    function updateProductImage(productId, imagePath) {
+        $.ajax({
+            url: '../actions/update_product_action.php',
+            method: 'POST',
+            data: {
+                product_id: productId,
+                product_cat: $('#productCategory').val(),
+                product_brand: $('#productBrand').val(),
+                product_title: $('#productTitle').val(),
+                product_price: $('#productPrice').val(),
+                product_desc: $('#productDesc').val(),
+                product_keywords: $('#productKeywords').val(),
+                product_image: imagePath
+            },
+            dataType: 'json',
+            success: function(response) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: 'Product and image saved successfully!',
+                    timer: 2000
+                });
+                $('#productModal').modal('hide');
+                loadProducts();
+                resetForm();
+            },
+            error: function() {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Product Saved',
+                    text: 'Product saved (image may not be linked)'
+                });
+                $('#productModal').modal('hide');
+                loadProducts();
+                resetForm();
             }
         });
     }
