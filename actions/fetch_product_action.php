@@ -12,10 +12,17 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
     exit();
 }
 
-$user_id = $_SESSION['customer_id'];
-$products = get_products_ctr($user_id);
+try {
+    $user_id = $_SESSION['customer_id'];
+    $products = get_products_ctr($user_id);
+    
+    $response['success'] = true;
+    $response['data'] = $products ? $products : array();
+} catch (Exception $e) {
+    $response['success'] = true;
+    $response['data'] = array();
+    $response['message'] = 'No products found or database error: ' . $e->getMessage();
+}
 
-$response['success'] = true;
-$response['data'] = $products;
 echo json_encode($response);
 ?>
