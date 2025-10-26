@@ -5,6 +5,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Home</title>
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 	<style>
 		.menu-tray {
 			position: fixed;
@@ -37,19 +38,62 @@
 		<span class="me-2">Menu:</span>
 		<?php if ($isLoggedIn): ?>
 			<span class="text-muted me-2">Welcome, <?php echo htmlspecialchars($_SESSION['name']); ?>!</span>
+			<!-- Customer-facing links -->
+			<a href="customer/all_product.php" class="btn btn-sm btn-outline-primary me-1">
+				<i class="fas fa-shopping-bag"></i> All Products
+			</a>
 			<?php if ($_SESSION['role'] == 1): ?>
+				<!-- Admin-only links -->
 				<a href="admin/category.php" class="btn btn-sm btn-outline-success me-1">Category</a>
 				<a href="admin/brand.php" class="btn btn-sm btn-outline-info me-1">Brand</a>
 				<a href="admin/product.php" class="btn btn-sm btn-outline-warning me-2">Add Product</a>
 			<?php endif; ?>
 			<a href="login/logout.php" class="btn btn-sm btn-outline-danger">Logout</a>
 		<?php else: ?>
-			<a href="login/register.php" class="btn btn-sm btn-outline-primary">Register</a>
+			<a href="login/register.php" class="btn btn-sm btn-outline-primary me-1">Register</a>
+			<a href="customer/all_product.php" class="btn btn-sm btn-outline-info me-1">
+				<i class="fas fa-shopping-bag"></i> All Products
+			</a>
 			<a href="login/login.php" class="btn btn-sm btn-outline-secondary">Login</a>
 		<?php endif; ?>
 	</div>
 
-	<div class="container" style="padding-top:120px;">
+	<!-- Search Box & Filters -->
+	<div class="container" style="padding-top:80px;">
+		<div class="row mb-4">
+			<div class="col-md-12">
+				<div class="card border-0 shadow-sm" style="border-radius: 15px; background: rgba(255,255,255,0.95);">
+					<div class="card-body p-4">
+						<h5 class="mb-3">
+							<i class="fas fa-search"></i> Search Products
+						</h5>
+						<form action="customer/product_search_result.php" method="GET" class="row g-3">
+							<div class="col-md-5">
+								<input type="text" class="form-control" name="q" placeholder="Search by product name..." required>
+							</div>
+							<div class="col-md-3">
+								<select class="form-select" id="categoryFilterHome">
+									<option value="">All Categories</option>
+								</select>
+							</div>
+							<div class="col-md-3">
+								<select class="form-select" id="brandFilterHome">
+									<option value="">All Brands</option>
+								</select>
+							</div>
+							<div class="col-md-1">
+								<button type="submit" class="btn btn-primary w-100" style="background: #D19C97; border-color: #D19C97;">
+									<i class="fas fa-search"></i>
+								</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="container" style="padding-top:20px;">
 		<div class="text-center">
 			<?php if ($isLoggedIn): ?>
 				<div class="welcome-message">
@@ -70,5 +114,49 @@
 	</div>
 
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script>
+		// Load categories and brands for homepage filters
+		$(document).ready(function() {
+			loadCategories();
+			loadBrands();
+		});
+		
+		function loadCategories() {
+			$.ajax({
+				url: 'actions/product_actions.php',
+				method: 'GET',
+				data: { action: 'get_all_categories' },
+				dataType: 'json',
+				success: function(response) {
+					if (response.success && response.data) {
+						let options = '<option value="">All Categories</option>';
+						response.data.forEach(function(category) {
+							options += `<option value="${category.cat_id}">${category.cat_name}</option>`;
+						});
+						$('#categoryFilterHome').html(options);
+					}
+				}
+			});
+		}
+		
+		function loadBrands() {
+			$.ajax({
+				url: 'actions/product_actions.php',
+				method: 'GET',
+				data: { action: 'get_all_brands' },
+				dataType: 'json',
+				success: function(response) {
+					if (response.success && response.data) {
+						let options = '<option value="">All Brands</option>';
+						response.data.forEach(function(brand) {
+							options += `<option value="${brand.brand_id}">${brand.brand_name}</option>`;
+						});
+						$('#brandFilterHome').html(options);
+					}
+				}
+			});
+		}
+	</script>
 </body>
 </html>

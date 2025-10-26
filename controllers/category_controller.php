@@ -36,3 +36,14 @@ function delete_category_ctr($cat_id, $user_id)
     $category = new Category();
     return $category->deleteCategory($cat_id, $user_id);
 }
+
+// Customer-facing function to get all categories (not user-specific)
+function get_all_categories_ctr()
+{
+    $category = new Category();
+    $sql = "SELECT DISTINCT cat_id, cat_name FROM categories ORDER BY cat_name";
+    $stmt = $category->db_conn()->prepare($sql);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    return $result->fetch_all(MYSQLI_ASSOC);
+}

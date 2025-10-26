@@ -97,5 +97,173 @@ class Product extends db_connection {
     public function getLastInsertedId() {
         return $this->db_conn()->insert_id;
     }
+
+    // Customer-facing methods for product display and search
+    
+    /**
+     * View all products with category and brand information
+     * @return array Array of all products
+     */
+    public function view_all_products() {
+        $sql = "SELECT p.*, c.cat_name, b.brand_name 
+                FROM products p 
+                JOIN categories c ON p.product_cat = c.cat_id 
+                JOIN brands b ON p.product_brand = b.brand_id 
+                ORDER BY p.date_created DESC";
+        $stmt = $this->db_conn()->prepare($sql);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
+    /**
+     * Search products by title
+     * @param string $query Search query
+     * @return array Array of matching products
+     */
+    public function search_products($query) {
+        $searchTerm = "%{$query}%";
+        $sql = "SELECT p.*, c.cat_name, b.brand_name 
+                FROM products p 
+                JOIN categories c ON p.product_cat = c.cat_id 
+                JOIN brands b ON p.product_brand = b.brand_id 
+                WHERE p.product_title LIKE ? 
+                ORDER BY p.date_created DESC";
+        $stmt = $this->db_conn()->prepare($sql);
+        $stmt->bind_param("s", $searchTerm);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
+    /**
+     * Filter products by category
+     * @param int $cat_id Category ID
+     * @return array Array of products in category
+     */
+    public function filter_products_by_category($cat_id) {
+        $sql = "SELECT p.*, c.cat_name, b.brand_name 
+                FROM products p 
+                JOIN categories c ON p.product_cat = c.cat_id 
+                JOIN brands b ON p.product_brand = b.brand_id 
+                WHERE p.product_cat = ? 
+                ORDER BY p.date_created DESC";
+        $stmt = $this->db_conn()->prepare($sql);
+        $stmt->bind_param("i", $cat_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
+    /**
+     * Filter products by brand
+     * @param int $brand_id Brand ID
+     * @return array Array of products for brand
+     */
+    public function filter_products_by_brand($brand_id) {
+        $sql = "SELECT p.*, c.cat_name, b.brand_name 
+                FROM products p 
+                JOIN categories c ON p.product_cat = c.cat_id 
+                JOIN brands b ON p.product_brand = b.brand_id 
+                WHERE p.product_brand = ? 
+                ORDER BY p.date_created DESC";
+        $stmt = $this->db_conn()->prepare($sql);
+        $stmt->bind_param("i", $brand_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
+    /**
+     * View single product details
+     * @param int $id Product ID
+     * @return array|null Product details or null
+     */
+    public function view_single_product($id) {
+        $sql = "SELECT p.*, c.cat_name, b.brand_name 
+                FROM products p 
+                JOIN categories c ON p.product_cat = c.cat_id 
+                JOIN brands b ON p.product_brand = b.brand_id 
+                WHERE p.product_id = ?";
+        $stmt = $this->db_conn()->prepare($sql);
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_assoc();
+    }
+
+    /**
+     * EXTRA CREDIT: Search products by keyword
+     * @param string $keyword Keyword to search
+     * @return array Array of matching products
+     */
+    public function search_by_keyword($keyword) {
+        $searchTerm = "%{$keyword}%";
+        $sql = "SELECT p.*, c.cat_name, b.brand_name 
+                FROM products p 
+                JOIN categories c ON p.product_cat = c.cat_id 
+                JOIN brands b ON p.product_brand = b.brand_id 
+                WHERE p.product_keywords LIKE ? 
+                ORDER BY p.date_created DESC";
+        $stmt = $this->db_conn()->prepare($sql);
+        $stmt->bind_param("s", $searchTerm);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
+    /**
+     * EXTRA CREDIT: Composite search with multiple filters
+     * @param array $filters Associative array of filters (category, brand, max_price, keyword)
+     * @return array Array of matching products
+     */
+    public function composite_search($filters) {
+        $sql = "SELECT p.*, c.cat_name, b.brand_name 
+                FROM products p 
+                JOIN categories c ON p.product_cat = c.cat_id 
+                JOIN brands b ON p.product_brand = b.brand_id 
+                WHERE 1=1";
+        
+        $params = [];
+        $types = "";
+        
+        if (!empty($filters['category'])) {
+            $sql .= " AND p.product_cat = ?";
+            $params[] = $filters['category'];
+            $types .= "i";
+        }
+        
+        if (!empty($filters['brand'])) {
+            $sql .= " AND p.product_brand = ?";
+            $params[] = $filters['brand'];
+            $types .= "i";
+        }
+        
+        if (!empty($filters['max_price'])) {
+            $sql .= " AND p.product_price <= ?";
+            $params[] = $filters['max_price'];
+            $types .= "d";
+        }
+        
+        if (!empty($filters['keyword'])) {
+            $sql .= " AND (p.product_keywords LIKE ? OR p.product_title LIKE ?)";
+            $searchTerm = "%{$filters['keyword']}%";
+            $params[] = $searchTerm;
+            $params[] = $searchTerm;
+            $types .= "ss";
+        }
+        
+        $sql .= " ORDER BY p.date_created DESC";
+        
+        $stmt = $this->db_conn()->prepare($sql);
+        
+        if (!empty($params)) {
+            $stmt->bind_param($types, ...$params);
+        }
+        
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
 }
 ?>

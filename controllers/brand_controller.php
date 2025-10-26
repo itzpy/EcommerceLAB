@@ -36,3 +36,17 @@ function delete_brand_ctr($brand_id, $user_id)
     $brand = new Brand();
     return $brand->deleteBrand($brand_id, $user_id);
 }
+
+// Customer-facing function to get all brands (not user-specific)
+function get_all_brands_ctr()
+{
+    $brand = new Brand();
+    $sql = "SELECT DISTINCT b.brand_id, b.brand_name, b.cat_id, c.cat_name 
+            FROM brands b 
+            JOIN categories c ON b.cat_id = c.cat_id 
+            ORDER BY b.brand_name";
+    $stmt = $brand->db_conn()->prepare($sql);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    return $result->fetch_all(MYSQLI_ASSOC);
+}

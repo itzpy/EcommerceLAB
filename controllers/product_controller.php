@@ -71,4 +71,41 @@ function get_product_by_title_ctr($product_title, $product_brand, $user_id) {
     $product = new Product();
     return $product->getProductByTitle($product_title, $product_brand, $user_id);
 }
+
+// Customer-facing controller functions
+
+function view_all_products_ctr() {
+    $product = new Product();
+    return $product->view_all_products();
+}
+
+function search_products_ctr($query) {
+    $product = new Product();
+    return $product->search_products($query);
+}
+
+function filter_products_by_category_ctr($cat_id) {
+    $product = new Product();
+    return $product->filter_products_by_category($cat_id);
+}
+
+function filter_products_by_brand_ctr($brand_id) {
+    $product = new Product();
+    return $product->filter_products_by_brand($brand_id);
+}
+
+function view_single_product_ctr($id) {
+    $product = new Product();
+    return $product->view_single_product($id);
+}
+
+function search_by_keyword_ctr($keyword) {
+    $product = new Product();
+    return $product->search_by_keyword($keyword);
+}
+
+function composite_search_ctr($filters) {
+    $product = new Product();
+    return $product->composite_search($filters);
+}
 ?>
