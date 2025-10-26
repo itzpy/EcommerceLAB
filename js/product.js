@@ -122,13 +122,22 @@ $(document).ready(function() {
             success: function(response) {
                 if (response.success) {
                     displayProducts(response.data);
+                } else {
+                    console.error('Load products error:', response);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: response.message || 'Failed to load products'
+                    });
                 }
             },
-            error: function() {
+            error: function(xhr, status, error) {
+                console.error('AJAX Error:', status, error);
+                console.error('Response:', xhr.responseText);
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
-                    text: 'Failed to load products'
+                    text: 'Failed to load products. Check console for details.'
                 });
             }
         });
