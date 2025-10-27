@@ -1,4 +1,9 @@
 <?php
+// Enable error reporting for debugging
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 session_start();
 header('Content-Type: application/json');
 require_once('../controllers/product_controller.php');
@@ -19,9 +24,10 @@ try {
     $response['success'] = true;
     $response['data'] = $products ? $products : array();
 } catch (Exception $e) {
-    $response['success'] = true;
+    $response['success'] = false;
     $response['data'] = array();
-    $response['message'] = 'No products found or database error: ' . $e->getMessage();
+    $response['message'] = 'Error: ' . $e->getMessage();
+    $response['trace'] = $e->getTraceAsString();
 }
 
 echo json_encode($response);
