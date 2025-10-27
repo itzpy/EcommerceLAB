@@ -63,19 +63,31 @@ try {
         $response['message'] = 'Product added successfully!';
         $response['product_id'] = $result;
     } else {
+        // Get the last MySQL error
+        require_once('../settings/db_class.php');
+        $db = new db_connection();
+        $conn = $db->db_conn();
+        
         $response['success'] = false;
         $response['message'] = 'Failed to add product. Database operation returned false.';
+        $response['mysql_error'] = $conn ? mysqli_error($conn) : 'No database connection';
+        $response['mysql_errno'] = $conn ? mysqli_errno($conn) : 0;
         $response['debug'] = [
             'user_id' => $user_id,
             'product_cat' => $product_cat,
             'product_brand' => $product_brand,
-            'product_title' => $product_title
+            'product_title' => $product_title,
+            'product_price' => $product_price,
+            'product_desc' => $product_desc,
+            'product_image' => $product_image,
+            'product_keywords' => $product_keywords
         ];
     }
 } catch (Exception $e) {
     $response['success'] = false;
     $response['message'] = 'Error adding product: ' . $e->getMessage();
     $response['error'] = $e->getMessage();
+    $response['trace'] = $e->getTraceAsString();
 }
 
 echo json_encode($response);
