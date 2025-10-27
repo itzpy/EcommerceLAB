@@ -86,6 +86,20 @@ class Product extends db_connection {
         return $result;
     }
 
+    public function updateProductImage($user_id) {
+        $sql = "UPDATE products SET product_image = ? WHERE product_id = ? AND user_id = ?";
+        $stmt = $this->db_conn()->prepare($sql);
+        if (!$stmt) {
+            throw new Exception("Prepare failed: " . $this->db_conn()->error);
+        }
+        $stmt->bind_param("sii", $this->product_image, $this->product_id, $user_id);
+        $result = $stmt->execute();
+        if (!$result) {
+            throw new Exception("Execute failed: " . $stmt->error);
+        }
+        return $result;
+    }
+
     public function getProducts($user_id) {
         $sql = "SELECT p.*, c.cat_name, b.brand_name 
                 FROM products p 

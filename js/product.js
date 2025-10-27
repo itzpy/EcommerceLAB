@@ -22,36 +22,77 @@ $(document).ready(function() {
     });
 
     $('#productImage').change(function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            if (file.size > 5 * 1024 * 1024) {
+        const files = e.target.files;
+        const maxFiles = 10;
+        const maxSize = 5 * 1024 * 1024; // 5MB
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+        
+        // Check file count
+        if (files.length > maxFiles) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Too Many Files',
+                text: `Maximum ${maxFiles} images allowed. You selected ${files.length}.`
+            });
+            $(this).val('');
+            $('#imagePreviewContainer').empty();
+            return;
+        }
+
+        $('#imagePreviewContainer').empty();
+        let validFiles = 0;
+
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            
+            // Validate file size
+            if (file.size > maxSize) {
                 Swal.fire({
-                    icon: 'error',
+                    icon: 'warning',
                     title: 'File Too Large',
-                    text: 'Image size must be less than 5MB'
+                    text: `${file.name} exceeds 5MB and was skipped.`
                 });
-                $(this).val('');
-                $('#imagePreview').hide();
-                return;
+                continue;
             }
 
-            const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+            // Validate file type
             if (!allowedTypes.includes(file.type)) {
                 Swal.fire({
-                    icon: 'error',
+                    icon: 'warning',
                     title: 'Invalid File Type',
-                    text: 'Only JPG, PNG, GIF, and WebP images are allowed'
+                    text: `${file.name} is not a valid image type and was skipped.`
                 });
-                $(this).val('');
-                $('#imagePreview').hide();
-                return;
+                continue;
             }
 
+            // Create preview
             const reader = new FileReader();
             reader.onload = function(e) {
-                $('#imagePreview').attr('src', e.target.result).show();
+                const col = $('<div>').addClass('col-md-3 col-sm-4 col-6 preview-item');
+                const img = $('<img>').attr('src', e.target.result);
+                const removeBtn = $('<button>')
+                    .addClass('remove-image')
+                    .html('<i class="fas fa-times"></i>')
+                    .attr('data-index', i)
+                    .click(function() {
+                        col.remove();
+                    });
+                
+                col.append(img).append(removeBtn);
+                $('#imagePreviewContainer').append(col);
             };
             reader.readAsDataURL(file);
+            validFiles++;
+        }
+
+        if (validFiles > 0) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Images Selected',
+                text: `${validFiles} image(s) ready for upload`,
+                timer: 2000,
+                showConfirmButton: false
+            });
         }
     });
 
@@ -341,40 +382,89 @@ $(document).ready(function() {
 
     function uploadImageForProduct(productId) {
         const fileInput = $('#productImage')[0];
+        const files = fileInput.files;
+        
+        if (files.length === 0) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: 'Product saved successfully!',
+                timer: 2000
+            });
+            $('#productModal').modal('hide');
+            loadProducts();
+            resetForm();
+            return;
+        }
+
         const formData = new FormData();
-        formData.append('product_image', fileInput.files[0]);
+        
+        // Append all selected files
+        for (let i = 0; i < files.length; i++) {
+            formData.append('product_images[]', files[i]);
+        }
         formData.append('product_id', productId);
 
+        Swal.fire({
+            title: 'Uploading Images...',
+            html: `Uploading ${files.length} image(s), please wait...`,
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
         $.ajax({
-            url: '../actions/upload_product_image_action.php',
+            url: '../actions/bulk_upload_product_images_action.php',
             method: 'POST',
             data: formData,
             processData: false,
             contentType: false,
             dataType: 'json',
             success: function(response) {
+                Swal.close();
+                
                 if (response.success) {
-                    updateProductImage(productId, response.image_path);
-                } else {
+                    let message = response.message;
+                    if (response.warnings && response.warnings.length > 0) {
+                        message += '<br><br><small class="text-warning">Warnings:<br>' + 
+                                   response.warnings.join('<br>') + '</small>';
+                    }
+                    
                     Swal.fire({
-                        icon: 'warning',
-                        title: 'Product Saved',
-                        text: 'Product saved but image upload failed: ' + response.message
+                        icon: 'success',
+                        title: 'Success',
+                        html: message,
+                        timer: 3000
                     });
+                    
                     $('#productModal').modal('hide');
                     loadProducts();
                     resetForm();
+                } else {
+                    let errorMsg = response.message || 'Failed to upload images';
+                    if (response.errors && response.errors.length > 0) {
+                        errorMsg += '<br><br><small class="text-danger">Errors:<br>' + 
+                                   response.errors.join('<br>') + '</small>';
+                    }
+                    
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Upload Failed',
+                        html: errorMsg
+                    });
                 }
             },
-            error: function() {
+            error: function(xhr, status, error) {
+                Swal.close();
+                console.error('Upload Error:', status, error);
+                console.error('Response:', xhr.responseText);
+                
                 Swal.fire({
-                    icon: 'warning',
-                    title: 'Product Saved',
-                    text: 'Product saved but image upload failed'
+                    icon: 'error',
+                    title: 'Upload Error',
+                    html: 'Failed to upload images. Check console for details.'
                 });
-                $('#productModal').modal('hide');
-                loadProducts();
-                resetForm();
             }
         });
     }

@@ -72,6 +72,12 @@ function get_product_by_title_ctr($product_title, $product_brand, $user_id) {
     return $product->getProductByTitle($product_title, $product_brand, $user_id);
 }
 
+function update_product_image_ctr($product_id, $image_path, $user_id) {
+    $product = new Product($product_id);
+    $product->setProductImage($image_path);
+    return $product->updateProductImage($user_id);
+}
+
 // Customer-facing controller functions
 
 function view_all_products_ctr() {

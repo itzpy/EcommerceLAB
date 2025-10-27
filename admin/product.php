@@ -78,6 +78,35 @@ if ($_SESSION['role'] != 1) {
             display: none;
             border-radius: 8px;
         }
+        #imagePreviewContainer .preview-item {
+            position: relative;
+            margin-bottom: 15px;
+        }
+        #imagePreviewContainer .preview-item img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 2px solid #ddd;
+        }
+        #imagePreviewContainer .preview-item .remove-image {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(220, 53, 69, 0.9);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #imagePreviewContainer .preview-item .remove-image:hover {
+            background: rgba(220, 53, 69, 1);
+        }
     </style>
 </head>
 <body>
@@ -145,10 +174,12 @@ if ($_SESSION['role'] != 1) {
                         </div>
 
                         <div class="mb-3">
-                            <label for="productImage" class="form-label">Product Image</label>
-                            <input type="file" class="form-control" id="productImage" name="product_image" accept="image/*">
-                            <small class="text-muted">Max size: 5MB. Formats: JPG, PNG, GIF, WebP</small>
-                            <img id="imagePreview" src="" alt="Preview">
+                            <label for="productImage" class="form-label">Product Images (Bulk Upload)</label>
+                            <input type="file" class="form-control" id="productImage" name="product_images[]" accept="image/*" multiple>
+                            <small class="text-muted">
+                                <i class="fas fa-info-circle"></i> Select multiple images (Max 10 images, 5MB each). Formats: JPG, PNG, GIF, WebP
+                            </small>
+                            <div id="imagePreviewContainer" class="row mt-3"></div>
                             <input type="hidden" id="imagePath" name="product_image_path">
                             <div id="currentImage" style="margin-top: 10px;"></div>
                         </div>
