@@ -69,6 +69,8 @@ class Product extends db_connection {
         if (!$result) {
             throw new Exception("Execute failed: " . $stmt->error);
         }
+        // Store the insert ID immediately after execution
+        $this->product_id = $this->db_conn()->insert_id;
         return $result;
     }
 

@@ -31,7 +31,12 @@ function add_product_ctr($product_cat, $product_brand, $product_title, $product_
     $product->setProductImage($product_image);
     $product->setProductKeywords($product_keywords);
     $product->setUserId($user_id);
-    return $product->addProduct() ? $product->getLastInsertedId() : false;
+    
+    if ($product->addProduct()) {
+        $insertId = $product->getLastInsertedId();
+        return $insertId > 0 ? $insertId : false;
+    }
+    return false;
 }
 
 function update_product_ctr($product_id, $product_cat, $product_brand, $product_title, $product_price, $product_desc, $product_image, $product_keywords, $user_id) {
