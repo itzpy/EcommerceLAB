@@ -364,15 +364,8 @@ $(document).ready(function() {
             dataType: 'json',
             success: function(response) {
                 if (response.success) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Success',
-                        text: 'Product and image saved successfully!',
-                        timer: 2000
-                    });
-                    $('#productModal').modal('hide');
-                    loadProducts();
-                    resetForm();
+                    // Now update the product record with the image path
+                    updateProductImage(productId, response.image_path);
                 } else {
                     Swal.fire({
                         icon: 'warning',
