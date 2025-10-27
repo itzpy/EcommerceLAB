@@ -111,6 +111,33 @@ if ($_SESSION['role'] != 1) {
 </head>
 <body>
     <div class="container">
+        <!-- Navigation Menu -->
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <a href="category.php" class="btn btn-sm btn-outline-success me-2">
+                            <i class="fas fa-list"></i> Categories
+                        </a>
+                        <a href="brand.php" class="btn btn-sm btn-outline-info me-2">
+                            <i class="fas fa-tags"></i> Brands
+                        </a>
+                        <a href="product.php" class="btn btn-sm btn-warning me-2">
+                            <i class="fas fa-box"></i> Products
+                        </a>
+                    </div>
+                    <div>
+                        <a href="../index.php" class="btn btn-sm btn-outline-secondary">
+                            <i class="fas fa-home"></i> Home
+                        </a>
+                        <a href="../login/logout.php" class="btn btn-sm btn-outline-danger">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="card">
             <div class="card-header">
                 <h3 class="mb-0"><i class="fas fa-box"></i> Product Management</h3>
