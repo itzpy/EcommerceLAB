@@ -13,7 +13,8 @@ class Product extends db_connection {
     private $user_id;
 
     public function __construct($product_id = null) {
-        parent::__construct();
+        // Initialize database connection (don't call parent constructor)
+        // Call db_connect if needed for immediate connection
         if ($product_id !== null) {
             $this->product_id = $product_id;
             $this->loadProduct();
