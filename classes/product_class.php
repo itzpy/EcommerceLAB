@@ -59,18 +59,19 @@ class Product extends db_connection {
     public function getUserId() { return $this->user_id; }
 
     public function addProduct() {
+        $conn = $this->db_conn();
         $sql = "INSERT INTO products (product_cat, product_brand, product_title, product_price, product_desc, product_image, product_keywords, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        $stmt = $this->db_conn()->prepare($sql);
+        $stmt = $conn->prepare($sql);
         if (!$stmt) {
-            throw new Exception("Prepare failed: " . $this->db_conn()->error);
+            throw new Exception("Prepare failed: " . $conn->error);
         }
         $stmt->bind_param("iisdsssi", $this->product_cat, $this->product_brand, $this->product_title, $this->product_price, $this->product_desc, $this->product_image, $this->product_keywords, $this->user_id);
         $result = $stmt->execute();
         if (!$result) {
             throw new Exception("Execute failed: " . $stmt->error);
         }
-        // Store the insert ID immediately after execution
-        $this->product_id = $this->db_conn()->insert_id;
+        // Store the insert ID immediately after execution from the SAME connection
+        $this->product_id = $conn->insert_id;
         return $result;
     }
 
