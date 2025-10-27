@@ -107,25 +107,30 @@ if ($_SESSION['role'] != 1) {
         #imagePreviewContainer .preview-item .remove-image:hover {
             background: rgba(220, 53, 69, 1);
         }
+        .menu-tray {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 12px 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+        .menu-tray a { margin-left: 8px; }
     </style>
 </head>
-<body>
-    <div class="container">
-        <!-- Navigation Menu -->
-        <div class="card mb-3">
-            <div class="card-body py-2">
-                <span class="me-2">Menu:</span>
-                <span class="text-muted me-2">Welcome, <?php echo htmlspecialchars($_SESSION['name']); ?>!</span>
-                <a href="../customer/all_product.php" class="btn btn-sm btn-outline-primary me-1">
-                    <i class="fas fa-shopping-bag"></i> All Products
-                </a>
-                <a href="category.php" class="btn btn-sm btn-outline-success me-1">Category</a>
-                <a href="brand.php" class="btn btn-sm btn-outline-info me-1">Brand</a>
-                <a href="product.php" class="btn btn-sm btn-outline-warning me-2">Add Product</a>
-                <a href="../login/logout.php" class="btn btn-sm btn-outline-danger">Logout</a>
-            </div>
-        </div>
+<body class="bg-light">
+    <!-- Menu Tray -->
+    <div class="menu-tray">
+        <span class="me-2">Menu:</span>
+        <a href="../index.php" class="btn btn-sm btn-outline-primary me-2">Home</a>
+        <a href="category.php" class="btn btn-sm btn-outline-secondary me-2">Category</a>
+        <a href="brand.php" class="btn btn-sm btn-outline-info me-2">Brand</a>
+        <a href="../login/logout.php" class="btn btn-sm btn-outline-danger">Logout</a>
+    </div>
 
+    <div class="container mt-5 pt-4">
         <div class="card">
             <div class="card-header">
                 <h3 class="mb-0"><i class="fas fa-box"></i> Product Management</h3>
