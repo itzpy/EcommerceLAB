@@ -58,7 +58,11 @@ if ($existing) {
 try {
     $result = add_product_ctr($product_cat, $product_brand, $product_title, $product_price, $product_desc, $product_image, $product_keywords, $user_id);
 
-    if ($result) {
+    // Debug: Log what we got back
+    error_log("Add product result: " . var_export($result, true));
+    error_log("Result type: " . gettype($result));
+    
+    if ($result && $result > 0) {
         $response['success'] = true;
         $response['message'] = 'Product added successfully!';
         $response['product_id'] = $result;
@@ -69,9 +73,11 @@ try {
         $conn = $db->db_conn();
         
         $response['success'] = false;
-        $response['message'] = 'Failed to add product. Database operation returned false.';
+        $response['message'] = 'Failed to add product. Database operation returned: ' . var_export($result, true);
         $response['mysql_error'] = $conn ? mysqli_error($conn) : 'No database connection';
         $response['mysql_errno'] = $conn ? mysqli_errno($conn) : 0;
+        $response['returned_value'] = $result;
+        $response['returned_type'] = gettype($result);
         $response['debug'] = [
             'user_id' => $user_id,
             'product_cat' => $product_cat,
