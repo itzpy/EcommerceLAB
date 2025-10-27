@@ -116,6 +116,9 @@ if ($_SESSION['role'] != 1) {
             padding: 12px 20px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             z-index: 1000;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
         }
         .menu-tray a { margin-left: 8px; }
     </style>
@@ -124,9 +127,9 @@ if ($_SESSION['role'] != 1) {
     <!-- Menu Tray -->
     <div class="menu-tray">
         <span class="me-2">Menu:</span>
-        <a href="../index.php" class="btn btn-sm btn-outline-primary me-2">Home</a>
-        <a href="category.php" class="btn btn-sm btn-outline-secondary me-2">Category</a>
-        <a href="brand.php" class="btn btn-sm btn-outline-info me-2">Brand</a>
+        <a href="../index.php" class="btn btn-sm btn-outline-primary me-1">Home</a>
+        <a href="category.php" class="btn btn-sm btn-outline-success me-1">Category</a>
+        <a href="brand.php" class="btn btn-sm btn-outline-info me-1">Brand</a>
         <a href="../login/logout.php" class="btn btn-sm btn-outline-danger">Logout</a>
     </div>
 
