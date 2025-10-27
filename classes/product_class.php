@@ -149,7 +149,7 @@ class Product extends db_connection {
     }
 
     /**
-     * Search products by title
+     * Search products by title, description, and keywords
      * @param string $query Search query
      * @return array Array of matching products
      */
@@ -160,9 +160,11 @@ class Product extends db_connection {
                 JOIN categories c ON p.product_cat = c.cat_id 
                 JOIN brands b ON p.product_brand = b.brand_id 
                 WHERE p.product_title LIKE ? 
+                   OR p.product_desc LIKE ?
+                   OR p.product_keywords LIKE ?
                 ORDER BY p.date_created DESC";
         $stmt = $this->db_conn()->prepare($sql);
-        $stmt->bind_param("s", $searchTerm);
+        $stmt->bind_param("sss", $searchTerm, $searchTerm, $searchTerm);
         $stmt->execute();
         $result = $stmt->get_result();
         return $result->fetch_all(MYSQLI_ASSOC);
