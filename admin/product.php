@@ -174,12 +174,11 @@ if ($_SESSION['role'] != 1) {
                         </div>
 
                         <div class="mb-3">
-                            <label for="productImage" class="form-label">Product Images (Bulk Upload)</label>
-                            <input type="file" class="form-control" id="productImage" name="product_images[]" accept="image/*" multiple>
+                            <label for="productImage" class="form-label">Product Image</label>
+                            <input type="file" class="form-control" id="productImage" name="product_image" accept="image/*">
                             <small class="text-muted">
-                                <i class="fas fa-info-circle"></i> Select multiple images (Max 10 images, 5MB each). Formats: JPG, PNG, GIF, WebP
+                                <i class="fas fa-info-circle"></i> Upload product image (Max 5MB). Formats: JPG, PNG, GIF, WebP
                             </small>
-                            <div id="imagePreviewContainer" class="row mt-3"></div>
                             <input type="hidden" id="imagePath" name="product_image_path">
                             <div id="currentImage" style="margin-top: 10px;"></div>
                         </div>

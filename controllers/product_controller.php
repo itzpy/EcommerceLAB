@@ -33,9 +33,12 @@ function add_product_ctr($product_cat, $product_brand, $product_title, $product_
     $product->setUserId($user_id);
     
     if ($product->addProduct()) {
-        $insertId = $product->getLastInsertedId();
+        // Get the product ID directly from the object since we stored it during insert
+        $insertId = $product->getProductId();
+        error_log("Product added, insert ID: " . $insertId);
         return $insertId > 0 ? $insertId : false;
     }
+    error_log("Product addProduct() returned false");
     return false;
 }
 
