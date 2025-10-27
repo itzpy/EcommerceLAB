@@ -81,7 +81,7 @@ class Product extends db_connection {
         if (!$stmt) {
             throw new Exception("Prepare failed: " . $this->db_conn()->error);
         }
-        $stmt->bind_param("iisdssiii", $this->product_cat, $this->product_brand, $this->product_title, $this->product_price, $this->product_desc, $this->product_image, $this->product_keywords, $this->product_id, $this->user_id);
+        $stmt->bind_param("iisdsssii", $this->product_cat, $this->product_brand, $this->product_title, $this->product_price, $this->product_desc, $this->product_image, $this->product_keywords, $this->product_id, $this->user_id);
         $result = $stmt->execute();
         if (!$result) {
             throw new Exception("Execute failed: " . $stmt->error);
