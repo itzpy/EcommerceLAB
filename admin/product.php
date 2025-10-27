@@ -113,28 +113,16 @@ if ($_SESSION['role'] != 1) {
     <div class="container">
         <!-- Navigation Menu -->
         <div class="card mb-3">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <a href="category.php" class="btn btn-sm btn-outline-success me-2">
-                            <i class="fas fa-list"></i> Categories
-                        </a>
-                        <a href="brand.php" class="btn btn-sm btn-outline-info me-2">
-                            <i class="fas fa-tags"></i> Brands
-                        </a>
-                        <a href="product.php" class="btn btn-sm btn-warning me-2">
-                            <i class="fas fa-box"></i> Products
-                        </a>
-                    </div>
-                    <div>
-                        <a href="../index.php" class="btn btn-sm btn-outline-secondary">
-                            <i class="fas fa-home"></i> Home
-                        </a>
-                        <a href="../login/logout.php" class="btn btn-sm btn-outline-danger">
-                            <i class="fas fa-sign-out-alt"></i> Logout
-                        </a>
-                    </div>
-                </div>
+            <div class="card-body py-2">
+                <span class="me-2">Menu:</span>
+                <span class="text-muted me-2">Welcome, <?php echo htmlspecialchars($_SESSION['name']); ?>!</span>
+                <a href="../customer/all_product.php" class="btn btn-sm btn-outline-primary me-1">
+                    <i class="fas fa-shopping-bag"></i> All Products
+                </a>
+                <a href="category.php" class="btn btn-sm btn-outline-success me-1">Category</a>
+                <a href="brand.php" class="btn btn-sm btn-outline-info me-1">Brand</a>
+                <a href="product.php" class="btn btn-sm btn-outline-warning me-2">Add Product</a>
+                <a href="../login/logout.php" class="btn btn-sm btn-outline-danger">Logout</a>
             </div>
         </div>
 
