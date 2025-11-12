@@ -98,7 +98,7 @@ CREATE TABLE `orderdetails` (
 CREATE TABLE `orders` (
   `order_id` int(11) NOT NULL,
   `customer_id` int(11) NOT NULL,
-  `invoice_no` int(11) NOT NULL,
+  `invoice_no` BIGINT NOT NULL,
   `order_date` date NOT NULL,
   `order_status` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
