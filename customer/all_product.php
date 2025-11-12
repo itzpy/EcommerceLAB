@@ -222,6 +222,12 @@ session_start();
                     <p class="lead">Find the perfect items from our curated collection</p>
                 </div>
                 <div class="col-md-4 text-end">
+                    <?php if (isset($_SESSION['logged_in']) && $_SESSION['logged_in']): ?>
+                        <a href="cart.php" class="btn btn-light btn-lg me-2" style="position: relative;">
+                            <i class="fas fa-shopping-cart me-2"></i>My Cart
+                            <span id="cartCount" class="badge bg-danger" style="position: absolute; top: -5px; right: -5px; display: none;">0</span>
+                        </a>
+                    <?php endif; ?>
                     <a href="../index.php" class="btn btn-light btn-lg">
                         <i class="fas fa-home me-2"></i>Back to Home
                     </a>

@@ -8,6 +8,7 @@ $(document).ready(function() {
     loadCategories();
     loadBrands();
     loadProducts();
+    updateCartCount();
     
     // Event listeners
     $('#categoryFilter').change(function() {
@@ -253,17 +254,63 @@ $(document).ready(function() {
     }
 });
 
-// Global function for add to cart (placeholder)
-function addToCart(productId) {
-    // Placeholder for add to cart functionality
-    if (typeof Swal !== 'undefined') {
-        Swal.fire({
-            icon: 'info',
-            title: 'Coming Soon',
-            text: 'Add to Cart functionality will be implemented in a future update.',
-            confirmButtonColor: '#D19C97'
-        });
-    } else {
-        alert('Add to Cart functionality will be implemented in a future update.');
-    }
+// Global function for add to cart
+function addToCart(productId, qty = 1) {
+    $.ajax({
+        url: '../actions/add_to_cart_action.php',
+        type: 'POST',
+        data: {
+            product_id: productId,
+            qty: qty
+        },
+        dataType: 'json',
+        success: function(response) {
+            if (response.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Added to Cart!',
+                    text: response.message,
+                    timer: 1500,
+                    showConfirmButton: false,
+                    confirmButtonColor: '#D19C97'
+                });
+                // Update cart count if function exists
+                if (typeof updateCartCount === 'function') {
+                    updateCartCount();
+                }
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: response.message,
+                    confirmButtonColor: '#D19C97'
+                });
+            }
+        },
+        error: function() {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Failed to add product to cart. Please try again.',
+                confirmButtonColor: '#D19C97'
+            });
+        }
+    });
 }
+
+// Update cart count badge
+function updateCartCount() {
+    $.ajax({
+        url: '../actions/get_cart_count.php',
+        type: 'GET',
+        dataType: 'json',
+        success: function(response) {
+            if (response.success && response.count > 0) {
+                $('#cartCount').text(response.count).show();
+            } else {
+                $('#cartCount').hide();
+            }
+        }
+    });
+}
+

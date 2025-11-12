@@ -42,6 +42,10 @@
 			<a href="customer/all_product.php" class="btn btn-sm btn-outline-primary me-1">
 				<i class="fas fa-shopping-bag"></i> All Products
 			</a>
+			<a href="customer/cart.php" class="btn btn-sm btn-outline-success me-1" style="position: relative;">
+				<i class="fas fa-shopping-cart"></i> Cart
+				<span id="cartCount" class="badge bg-danger" style="position: absolute; top: -5px; right: -5px; display: none;">0</span>
+			</a>
 			<?php if ($_SESSION['role'] == 1): ?>
 				<!-- Admin-only links -->
 				<a href="admin/category.php" class="btn btn-sm btn-outline-success me-1">Category</a>
@@ -157,6 +161,29 @@
 				}
 			});
 		}
+		
+		// Update cart count
+		function updateCartCount() {
+			<?php if ($isLoggedIn): ?>
+			$.ajax({
+				url: 'actions/get_cart_count.php',
+				type: 'GET',
+				dataType: 'json',
+				success: function(response) {
+					if (response.success && response.count > 0) {
+						$('#cartCount').text(response.count).show();
+					} else {
+						$('#cartCount').hide();
+					}
+				}
+			});
+			<?php endif; ?>
+		}
+		
+		// Load cart count on page load
+		$(document).ready(function() {
+			updateCartCount();
+		});
 	</script>
 </body>
 </html>
